@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Composes dependencies and returns the result of composition.
 Future<CompositionResult> composeDependencies({
   required ApplicationConfig config,
-  required FakeLogger logger,
+  required Logger logger,
   required ErrorReportingService errorReporter,
 }) async {
   final stopwatch = Stopwatch()..start();
@@ -62,7 +62,7 @@ final class CompositionResult {
 /// Creates the initialized [DependenciesContainer].
 Future<DependenciesContainer> createDependenciesContainer(
   ApplicationConfig config,
-  FakeLogger logger,
+  Logger logger,
   ErrorReportingService errorReporter,
 ) async {
   final sharedPreferences = SharedPreferencesAsync();
@@ -82,9 +82,9 @@ Future<DependenciesContainer> createDependenciesContainer(
   );
 }
 
-/// TODO: Replace with real Logger creation using observers from packages/monitoring.
-FakeLogger createAppLogger({List<FakeLogObserver> observers = const []}) {
-  final logger = FakeLogger();
+/// Creates the [Logger] instance and attaches any provided observers.
+Logger createAppLogger({List<LogObserver> observers = const []}) {
+  final logger = Logger();
 
   for (final observer in observers) {
     logger.addObserver(observer);

@@ -20,7 +20,7 @@ class DependenciesContainer {
     required this.settingsContainer,
   });
 
-  final FakeLogger logger;
+  final Logger logger;
   final ApplicationConfig config;
   final ErrorReportingService errorReporter;
   final PackageInfo packageInfo;

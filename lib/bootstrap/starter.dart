@@ -16,6 +16,7 @@ import 'package:flutter_starter/bootstrap/app_bloc_observer.dart';
 import 'package:flutter_starter/bootstrap/application_config.dart';
 import 'package:flutter_starter/bootstrap/bloc_transformer.dart';
 import 'package:flutter_starter/bootstrap/composition.dart';
+import 'package:monitoring/monitoring.dart';
 import 'package:flutter_starter/bootstrap/fakes.dart';
 
 /// Initializes dependencies and runs app.
@@ -24,12 +25,11 @@ Future<void> starter() async {
 
   final errorReporter = await createErrorReporter(config);
 
-  // TODO: Replace Logger with real implementation from packages/monitoring.
   final logger = createAppLogger(
     observers: [
-      FakeErrorReporterLogObserver(errorReporter),
+      ErrorReporterLogObserver(errorReporter),
       if (!kReleaseMode)
-        const FakePrintingLogObserver(logLevel: FakeLogLevel.trace),
+        const PrintingLogObserver(logLevel: LogLevel.trace),
     ],
   );
 
@@ -39,7 +39,6 @@ Future<void> starter() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // Configure global error interception.
-      // TODO: Replace with real logFlutterError / logPlatformDispatcherError from packages/monitoring.
       FlutterError.onError = logger.logFlutterError;
       WidgetsBinding.instance.platformDispatcher.onError =
           logger.logPlatformDispatcherError;
@@ -81,7 +80,6 @@ Future<void> starter() async {
       // Launch the application.
       await composeAndRun();
     },
-    // TODO: Replace with logger.logZoneError from packages/monitoring.
     logger.logZoneError,
   );
 }
