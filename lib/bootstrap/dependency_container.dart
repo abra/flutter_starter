@@ -4,6 +4,7 @@
 // singletons or a service locator. This keeps dependencies explicit and makes
 // them easy to substitute in tests via TestDependenciesContainer.
 
+import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_starter/bootstrap/application_config.dart';
 import 'package:flutter_starter/bootstrap/fakes.dart';
@@ -21,7 +22,7 @@ class DependenciesContainer {
 
   final FakeLogger logger;
   final ApplicationConfig config;
-  final FakeErrorReporter errorReporter;
+  final ErrorReportingService errorReporter;
   final PackageInfo packageInfo;
 
   // TODO: Replace with real SettingsContainer from settings feature package.

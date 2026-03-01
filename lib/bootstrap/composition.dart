@@ -4,6 +4,7 @@
 // composeDependencies() can be called independently in tests
 // with substituted implementations.
 
+import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_starter/bootstrap/application_config.dart';
 import 'package:flutter_starter/bootstrap/dependency_container.dart';
@@ -18,7 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<CompositionResult> composeDependencies({
   required ApplicationConfig config,
   required FakeLogger logger,
-  required FakeErrorReporter errorReporter,
+  required ErrorReportingService errorReporter,
 }) async {
   final stopwatch = Stopwatch()..start();
 
@@ -62,7 +63,7 @@ final class CompositionResult {
 Future<DependenciesContainer> createDependenciesContainer(
   ApplicationConfig config,
   FakeLogger logger,
-  FakeErrorReporter errorReporter,
+  ErrorReportingService errorReporter,
 ) async {
   final sharedPreferences = SharedPreferencesAsync();
   final packageInfo = await PackageInfo.fromPlatform();
@@ -92,10 +93,12 @@ FakeLogger createAppLogger({List<FakeLogObserver> observers = const []}) {
   return logger;
 }
 
-/// TODO: Replace with real ErrorReporter initialization from packages/monitoring.
-Future<FakeErrorReporter> createErrorReporter(ApplicationConfig config) async {
-  // TODO: Replace FakeNoopErrorReporter with SentryErrorReporter from packages/monitoring.
-  const errorReporter = FakeNoopErrorReporter();
+/// Creates the [ErrorReportingService] instance.
+///
+/// Replace [NoopErrorReporter] with a real implementation (e.g. Crashlytics)
+/// from packages/monitoring when ready.
+Future<ErrorReportingService> createErrorReporter(ApplicationConfig config) async {
+  const errorReporter = NoopErrorReporter();
 
   if (config.enableSentry) {
     await errorReporter.initialize();

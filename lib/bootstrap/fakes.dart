@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:ui' show Color, Locale;
 
 import 'package:flutter/foundation.dart';
+import 'package:monitoring/monitoring.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ─── packages/monitoring (logger) ─────────────────────────────────────────────
@@ -67,7 +68,7 @@ final class FakePrintingLogObserver with FakeLogObserver {
 final class FakeErrorReporterLogObserver with FakeLogObserver {
   const FakeErrorReporterLogObserver(this._errorReporter);
 
-  final FakeErrorReporter _errorReporter;
+  final ErrorReportingService _errorReporter;
 
   @override
   void onLog(FakeLogMessage logMessage) {
@@ -146,43 +147,6 @@ base class FakeLogger {
   /// TODO: Replace with logger.logZoneError from packages/monitoring.
   void logZoneError(Object error, StackTrace stackTrace) =>
       this.error('Zone Error', error: error, stackTrace: stackTrace);
-}
-
-// ─── packages/monitoring (error_reporter) ─────────────────────────────────────
-
-/// TODO: Replace with ErrorReporter from packages/monitoring package.
-abstract interface class FakeErrorReporter {
-  bool get isInitialized;
-
-  /// TODO: Replace with real initialization (e.g. Sentry.init).
-  Future<void> initialize();
-
-  Future<void> close();
-
-  Future<void> captureException({
-    required Object throwable,
-    StackTrace? stackTrace,
-  });
-}
-
-/// TODO: Replace with concrete ErrorReporter implementation from packages/monitoring.
-final class FakeNoopErrorReporter implements FakeErrorReporter {
-  const FakeNoopErrorReporter();
-
-  @override
-  bool get isInitialized => false;
-
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<void> close() async {}
-
-  @override
-  Future<void> captureException({
-    required Object throwable,
-    StackTrace? stackTrace,
-  }) async {}
 }
 
 // ─── packages/features/settings ───────────────────────────────────────────────

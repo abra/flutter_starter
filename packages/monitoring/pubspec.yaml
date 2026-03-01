@@ -1,0 +1,11 @@
+name: monitoring
+description: "Error reporting abstraction. Replace NoopErrorReporter with a real implementation (e.g. Crashlytics)."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter

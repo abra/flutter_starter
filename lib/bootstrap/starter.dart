@@ -22,7 +22,6 @@ import 'package:flutter_starter/bootstrap/fakes.dart';
 Future<void> starter() async {
   const config = ApplicationConfig();
 
-  // TODO: Replace ErrorReporter with real implementation from packages/monitoring.
   final errorReporter = await createErrorReporter(config);
 
   // TODO: Replace Logger with real implementation from packages/monitoring.
