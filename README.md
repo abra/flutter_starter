@@ -1,7 +1,7 @@
 # flutter_starter
 
 A lightweight Flutter code template with clean architecture, BLoC, and modular feature packages.
-Inspired by [sizzle_starter](https://github.com/learntoflutter/sizzle_starter) — a simplified version without the full monorepo setup, intended as a starting point for small to medium apps.
+Inspired by [sizzle_starter](https://github.com/hawkkiller/sizzle_starter) — a simplified version without the full monorepo setup, intended as a starting point for small to medium apps.
 
 ## What's included
 
