@@ -16,7 +16,7 @@ lib/
     app_bloc_observer.dart      — global BLoC logging
     bloc_transformer.dart       — SequentialBlocTransformer (asyncExpand)
     dependency_container.dart   — DependenciesContainer + TestDependenciesContainer
-    fakes.dart                  — temporary stubs (replace with real packages, then delete)
+    fakes.dart                  — temporary stubs for settings (replace with real packages, then delete)
   app/
     root_context.dart           — DependenciesScope → MaterialContext
     dependency_scope.dart       — InheritedWidget for DependenciesContainer
@@ -31,45 +31,48 @@ lib/
 packages/
   features/                     — feature packages (notes, auth, profile, etc.)
   component_library/            — shared UI: theme, design tokens, common widgets
-  monitoring/                   — Logger and ErrorReporter implementations
+  monitoring/                   — Logger, ErrorReportingService, AnalyticsReporter
 ```
 
 ## packages/ — replacing Fake* stubs
 
-`lib/bootstrap/fakes.dart` contains temporary stub implementations of all external dependencies.
+`lib/bootstrap/fakes.dart` contains temporary stub implementations for settings-related dependencies.
 Each `Fake*` class is a placeholder that should be replaced with a real package from `packages/`
 when you're ready to implement it. Once all stubs are replaced, delete `fakes.dart`.
 
 | Fake class | Replace with | Package |
 |---|---|---|
-| `FakeLogger` | real `Logger` | `packages/monitoring` |
-| `FakeErrorReporter` | real `ErrorReporter` (e.g. Sentry) | `packages/monitoring` |
 | `FakeSettings` / `FakeGeneralSettings` | domain `Settings` model | `packages/features/settings` |
 | `FakeSettingsService` | real `SettingsService` (SharedPreferences) | `packages/features/settings` |
 | `FakeSettingsContainer` | real `SettingsContainer` | `packages/features/settings` |
 | `FakeThemeModeVO` | domain `ThemeModeVO` | `packages/features/settings` |
 
+`Logger` and `ErrorReportingService` are already real — provided by `packages/monitoring`.
+
 ### Suggested packages layout
 
 ```
 packages/
-  monitoring/
+  monitoring/                  — already exists
     lib/
       src/
-        logger.dart            — real Logger base class
-        sentry_error_reporter.dart
-  component_library/
+        logger.dart                        — Logger, LogLevel, LogObserver, LogMessage
+        printing_log_observer.dart         — console output via debugPrint
+        error_reporting_service.dart       — ErrorReportingService interface + NoopErrorReporter
+        error_reporter_log_observer.dart   — bridges Logger errors into ErrorReportingService
+        analytics_reporter.dart            — AnalyticsEvent, AnalyticsReporter interface + NoopAnalyticsReporter
+  component_library/           — create when needed
     lib/
       src/
         theme.dart             — AppTheme, color tokens
   features/
-    settings/
+    settings/                  — create when needed
       lib/
         src/
           settings.dart        — Settings, GeneralSettings domain models
           settings_service.dart
           settings_container.dart
-    notes/
+    notes/                     — create when needed
       lib/
         ...
 ```
