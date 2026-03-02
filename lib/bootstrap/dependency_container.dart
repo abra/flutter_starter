@@ -16,14 +16,14 @@ class DependenciesContainer {
     required this.config,
     required this.errorReporter,
     required this.packageInfo,
-    required this.appSettingsService,
+    required this.appSettingsContainer,
   });
 
   final Logger logger;
   final ApplicationConfig config;
   final ErrorReportingService errorReporter;
   final PackageInfo packageInfo;
-  final AppSettingsService appSettingsService;
+  final AppSettingsContainer appSettingsContainer;
 }
 
 /// A special version of [DependenciesContainer] that is used in tests.

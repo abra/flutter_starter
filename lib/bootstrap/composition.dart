@@ -67,14 +67,16 @@ Future<DependenciesContainer> createDependenciesContainer(
 ) async {
   final sharedPreferences = SharedPreferencesAsync();
   final packageInfo = await PackageInfo.fromPlatform();
-  final appSettingsService = await AppSettingsService.create(sharedPreferences);
+  final appSettingsContainer = await AppSettingsContainer.create(
+    sharedPreferences: sharedPreferences,
+  );
 
   return DependenciesContainer(
     logger: logger,
     config: config,
     errorReporter: errorReporter,
     packageInfo: packageInfo,
-    appSettingsService: appSettingsService,
+    appSettingsContainer: appSettingsContainer,
   );
 }
 

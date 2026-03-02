@@ -1,8 +1,7 @@
 // MaterialApp entry point: wires theme, locale and navigator.
 //
-// Reads AppSettings from AppSettingsScope and maps them to MaterialApp
-// parameters (ThemeMode, ThemeData, locale). The GlobalKey ensures
-// Flutter Inspector works correctly across hot reloads.
+// Uses AppSettingsBuilder to rebuild MaterialApp when settings change.
+// The GlobalKey ensures Flutter Inspector works correctly across hot reloads.
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
@@ -17,27 +16,29 @@ class MaterialContext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = AppSettingsScope.of(context);
-
-    return MaterialApp(
-      themeMode: settings.themeMode,
-      theme: ThemeData(
-        colorSchemeSeed: settings.seedColor,
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        colorSchemeSeed: settings.seedColor,
-        brightness: Brightness.dark,
-      ),
-      locale: settings.locale,
-      home: const Placeholder(), // TODO: Replace with app entry screen
-      builder: (context, child) {
-        // KeyedSubtree with a stable GlobalKey prevents Flutter from
-        // destroying and recreating the subtree when MaterialApp rebuilds,
-        // which is required for correct Flutter Inspector behavior.
-        return KeyedSubtree(
-          key: _globalKey,
-          child: MediaQueryRootOverride(child: child!),
+    return AppSettingsBuilder(
+      builder: (context, settings) {
+        return MaterialApp(
+          themeMode: settings.themeMode,
+          theme: ThemeData(
+            colorSchemeSeed: settings.seedColor,
+            brightness: Brightness.light,
+          ),
+          darkTheme: ThemeData(
+            colorSchemeSeed: settings.seedColor,
+            brightness: Brightness.dark,
+          ),
+          locale: settings.locale,
+          home: const Placeholder(), // TODO: Replace with app entry screen
+          builder: (context, child) {
+            // KeyedSubtree with a stable GlobalKey prevents Flutter from
+            // destroying and recreating the subtree when MaterialApp rebuilds,
+            // which is required for correct Flutter Inspector behavior.
+            return KeyedSubtree(
+              key: _globalKey,
+              child: MediaQueryRootOverride(child: child!),
+            );
+          },
         );
       },
     );
