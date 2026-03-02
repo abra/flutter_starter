@@ -35,21 +35,26 @@ packages/
 
 ## packages/features/app_settings
 
-Manages user app_settings preferences: theme mode (light/dark/system), seed color, and locale.
+Manages user preferences: theme mode (light/dark/system), seed color, and locale.
 Persists to SharedPreferences automatically. Ready to use out of the box.
 
 ```dart
-// Read (subscribes to changes):
-final app_settings = AppSettingsScope.of(context);
-app_settings.themeMode  // ThemeMode
-app_settings.seedColor  // Color
-app_settings.locale     // Locale
+// Rebuild on change:
+AppSettingsBuilder(
+  builder: (context, settings) {
+    return Text(settings.themeMode.name);
+  },
+)
 
 // Update (persists immediately):
-AppSettingsScope.update(context, (s) => s.copyWith(themeMode: ThemeMode.dark));
+AppSettingsScope.of(context).settingsService.update(
+  (s) => s.copyWith(themeMode: ThemeMode.dark),
+);
 ```
 
-`MaterialContext` already reads from `AppSettingsScope` — theme and locale switch automatically.
+`MaterialContext` wraps `MaterialApp` in `AppSettingsBuilder` — theme and locale switch automatically.
+
+For adding translations, see [L10N.md](L10N.md).
 
 ## packages/monitoring
 
@@ -72,7 +77,8 @@ packages/features/*   →   lib/bootstrap/composition.dart   →   DependenciesC
 
 - Global dependencies are created once in `composition.dart` and stored in `DependenciesContainer`
 - `DependenciesScope` exposes the container to the widget tree without singletons or service locators
-- `AppSettingsScope` subscribes to `AppearanceService.stream` and rebuilds only the affected subtree
+- `AppSettingsScope` is a pure `InheritedWidget` holding `AppSettingsContainer` — never rebuilds on settings change
+- `AppSettingsBuilder` is the `StreamBuilder` — placed only where settings changes need to trigger a rebuild
 - Feature BLoCs access dependencies via `DependenciesScope.of(context)`
 
 ## How to use
