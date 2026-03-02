@@ -16,12 +16,10 @@ lib/
     app_bloc_observer.dart      — global BLoC logging
     bloc_transformer.dart       — SequentialBlocTransformer (asyncExpand)
     dependency_container.dart   — DependenciesContainer + TestDependenciesContainer
-    fakes.dart                  — temporary stubs for settings (replace with real packages, then delete)
   app/
     root_context.dart           — DependenciesScope → MaterialContext
-    dependency_scope.dart       — InheritedWidget for DependenciesContainer
-    app_settings_scope.dart     — StreamBuilder<Settings>, propagates settings
-    material_context.dart       — MaterialApp wired to settings (theme, locale)
+    dependency_scope.dart       — InheritedWidget for DependenciesContainer + AppSettingsScope
+    material_context.dart       — MaterialApp wired to AppSettingsScope (theme, locale)
     media_query.dart            — clamps text scale factor at root
     initialization_failed.dart  — error screen with retry button
     routing.dart                — route name constants
@@ -29,65 +27,34 @@ lib/
     inherited_extension.dart    — inhOf / inhMaybeOf helpers
     string_extension.dart       — String.limit(n) for log truncation
 packages/
-  features/                     — feature packages (notes, auth, profile, etc.)
-  component_library/            — shared UI: theme, design tokens, common widgets
+  features/
+    app_settings/                 — theme mode, seed color, locale (SharedPreferences)
+  component_library/            — shared UI: theme, design tokens, common widgets (create when needed)
   monitoring/                   — Logger, ErrorReportingService, AnalyticsReporter
 ```
 
-## packages/ — replacing Fake* stubs
+## packages/features/app_settings
 
-`lib/bootstrap/fakes.dart` contains temporary stub implementations for settings-related dependencies.
-Each `Fake*` class is a placeholder that should be replaced with a real package from `packages/`
-when you're ready to implement it. Once all stubs are replaced, delete `fakes.dart`.
+Manages user app_settings preferences: theme mode (light/dark/system), seed color, and locale.
+Persists to SharedPreferences automatically. Ready to use out of the box.
 
-| Fake class | Replace with | Package |
-|---|---|---|
-| `FakeSettings` / `FakeGeneralSettings` | domain `Settings` model | `packages/features/settings` |
-| `FakeSettingsService` | real `SettingsService` (SharedPreferences) | `packages/features/settings` |
-| `FakeSettingsContainer` | real `SettingsContainer` | `packages/features/settings` |
-| `FakeThemeModeVO` | domain `ThemeModeVO` | `packages/features/settings` |
+```dart
+// Read (subscribes to changes):
+final app_settings = AppSettingsScope.of(context);
+app_settings.themeMode  // ThemeMode
+app_settings.seedColor  // Color
+app_settings.locale     // Locale
 
-`Logger` and `ErrorReportingService` are already real — provided by `packages/monitoring`.
-
-### Suggested packages layout
-
-```
-packages/
-  monitoring/                  — already exists
-    lib/
-      src/
-        logger.dart                        — Logger, LogLevel, LogObserver, LogMessage
-        printing_log_observer.dart         — console output via debugPrint
-        error_reporting_service.dart       — ErrorReportingService interface + NoopErrorReporter
-        error_reporter_log_observer.dart   — bridges Logger errors into ErrorReportingService
-        analytics_reporter.dart            — AnalyticsEvent, AnalyticsReporter interface + NoopAnalyticsReporter
-  component_library/           — create when needed
-    lib/
-      src/
-        theme.dart             — AppTheme, color tokens
-  features/
-    settings/                  — create when needed
-      lib/
-        src/
-          settings.dart        — Settings, GeneralSettings domain models
-          settings_service.dart
-          settings_container.dart
-    notes/                     — create when needed
-      lib/
-        ...
+// Update (persists immediately):
+AppSettingsScope.update(context, (s) => s.copyWith(themeMode: ThemeMode.dark));
 ```
 
-Each package is registered in the root `pubspec.yaml`:
+`MaterialContext` already reads from `AppSettingsScope` — theme and locale switch automatically.
 
-```yaml
-dependencies:
-  monitoring:
-    path: packages/monitoring
-  component_library:
-    path: packages/component_library
-  settings:
-    path: packages/features/settings
-```
+## packages/monitoring
+
+`Logger` and `ErrorReportingService` are ready and wired in `starter.dart`.
+See [packages/monitoring/README.md](packages/monitoring/README.md) for full usage.
 
 ## Architecture overview
 
@@ -105,7 +72,7 @@ packages/features/*   →   lib/bootstrap/composition.dart   →   DependenciesC
 
 - Global dependencies are created once in `composition.dart` and stored in `DependenciesContainer`
 - `DependenciesScope` exposes the container to the widget tree without singletons or service locators
-- `AppSettingsScope` subscribes to `SettingsService.stream` and rebuilds only the affected subtree
+- `AppSettingsScope` subscribes to `AppearanceService.stream` and rebuilds only the affected subtree
 - Feature BLoCs access dependencies via `DependenciesScope.of(context)`
 
 ## How to use

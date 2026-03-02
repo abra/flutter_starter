@@ -27,6 +27,11 @@ dependencies:
   flutter_bloc: ^9.1.1
   shared_preferences: ^2.5.4
   package_info_plus: ^9.0.0
+
+  monitoring:
+    path: packages/monitoring
+  app_settings:
+    path: packages/features/app_settings
 ```
 
 Then run:
@@ -40,4 +45,3 @@ flutter pub get
 - [ ] `lib/app/routing.dart` — replace route constants with your routes
 - [ ] `lib/app/material_context.dart` — replace `home: const Placeholder()` with your home screen
 - [ ] `packages/features/` — add your feature packages here
-- [ ] `lib/bootstrap/fakes.dart` — replace `Fake*` with real implementations as packages are added
