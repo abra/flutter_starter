@@ -117,8 +117,3 @@ packages/features/*     → lib/               ❌ never
 
 See [SETUP.md](SETUP.md).
 
-## Docs
-
-- [.docs/ARCHITECTURE.md](.docs/ARCHITECTURE.md) — package structure, dependency rules
-- [.docs/DEPENDENCIES.md](.docs/DEPENDENCIES.md) — how to add new data sources
-- [.docs/THEMING.md](.docs/THEMING.md) — custom colors, design tokens, multiple themes
