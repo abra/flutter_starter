@@ -85,13 +85,3 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 ```
-
-### 3. Run pub get
-
-```bash
-flutter pub get
-cd packages/app_settings && flutter pub get && cd ../..
-cd packages/preferences_storage && flutter pub get && cd ../..
-cd packages/component_library && flutter pub get && cd ../..
-cd packages/monitoring && flutter pub get && cd ../..
-```
