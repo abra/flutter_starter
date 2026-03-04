@@ -1,29 +1,51 @@
 # New project setup
 
-## 1. Create the project
+## Quick start
 
 ```bash
-flutter create . --org com.example.yourcompany --project-name your_app_name --platforms=android,ios
+# 1. Copy flutter_starter to your new project directory
+cp -r flutter_starter/ myapp/ && cd myapp/
+
+# 2. Create the Flutter project (generates pubspec.yaml, android/, ios/)
+flutter create . --org com.example.yourcompany --project-name myapp --platforms=android,ios
+
+# 3. Run the setup script
+bash setup.sh myapp
+
+# 4. Run
+flutter run
 ```
 
-## 2. Replace lib/ and packages/ with the template
+`setup.sh` handles the rest automatically:
+- Replaces `flutter_starter` → `myapp` in all Dart files
+- Patches `pubspec.yaml` with required dependencies
+- Runs `flutter pub get` in root and all packages
 
-```bash
-rm -rf lib/ test/
-cp -r path/to/flutter_starter/lib .
-cp -r path/to/flutter_starter/packages .
-cp -r path/to/flutter_starter/.docs .
-```
+---
 
-Find-and-replace the package name in all Dart files:
+## After setup — checklist
+
+- [ ] `lib/app/router/app_routes.dart` — add your route constants
+- [ ] `lib/app/material_context.dart` — replace `home: const Placeholder()` with your home screen
+- [ ] `lib/bootstrap/dependency_container.dart` — add your feature dependencies
+- [ ] `lib/bootstrap/composition.dart` — wire dependencies in `createDependenciesContainer()`
+- [ ] `android/app/build.gradle.kts` — verify `namespace` / `applicationId` are not duplicated
+- [ ] `packages/features/` — add your feature packages here
+- [ ] `packages/shared/` — add domain models and repository interfaces
+
+---
+
+## Manual setup (if needed)
+
+If `setup.sh` doesn't work for your environment, do it manually:
+
+### 1. Replace package name
 
 ```bash
 find lib packages -name "*.dart" -exec sed -i '' 's/flutter_starter/your_app_name/g' {} \;
 ```
 
-## 3. Update pubspec.yaml
-
-Replace the generated `pubspec.yaml` contents with:
+### 2. Replace pubspec.yaml contents
 
 ```yaml
 name: your_app_name
@@ -64,7 +86,7 @@ flutter:
   uses-material-design: true
 ```
 
-Then run:
+### 3. Run pub get
 
 ```bash
 flutter pub get
@@ -73,21 +95,3 @@ cd packages/preferences_storage && flutter pub get && cd ../..
 cd packages/component_library && flutter pub get && cd ../..
 cd packages/monitoring && flutter pub get && cd ../..
 ```
-
-## 4. Fix Android namespace
-
-In `android/app/build.gradle.kts`, verify that `namespace` and `applicationId` are not duplicated:
-
-```kotlin
-namespace = "com.example.yourcompany.your_app_name"  // ✅ not duplicated
-applicationId = "com.example.yourcompany.your_app_name"
-```
-
-## 5. Checklist
-
-- [ ] `lib/app/router/app_routes.dart` — add your route constants
-- [ ] `lib/app/material_context.dart` — replace `home: const Placeholder()` with your home screen
-- [ ] `lib/bootstrap/dependency_container.dart` — add your feature dependencies
-- [ ] `lib/bootstrap/composition.dart` — wire your dependencies in `createDependenciesContainer()`
-- [ ] `packages/features/` — add your feature packages here
-- [ ] `packages/shared/` — add domain models, repository interfaces
