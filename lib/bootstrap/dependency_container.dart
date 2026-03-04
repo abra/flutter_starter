@@ -7,7 +7,7 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_starter/bootstrap/application_config.dart';
+import 'package:flutter_starter/bootstrap/config/application_config.dart';
 
 /// Container for global dependencies.
 class DependenciesContainer {
@@ -16,14 +16,14 @@ class DependenciesContainer {
     required this.config,
     required this.errorReporter,
     required this.packageInfo,
-    required this.appSettingsContainer,
+    required this.appSettingsService,
   });
 
   final Logger logger;
   final ApplicationConfig config;
   final ErrorReportingService errorReporter;
   final PackageInfo packageInfo;
-  final AppSettingsContainer appSettingsContainer;
+  final AppSettingsService appSettingsService;
 }
 
 /// A special version of [DependenciesContainer] that is used in tests.

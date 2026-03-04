@@ -31,7 +31,7 @@ class DependenciesScope extends StatelessWidget {
       // AppSettingsScope is nested here so that settings are always available
       // to any widget that has access to dependencies.
       child: AppSettingsScope(
-        settingsContainer: dependencies.appSettingsContainer,
+        service: dependencies.appSettingsService,
         child: child,
       ),
     );

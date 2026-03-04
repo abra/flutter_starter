@@ -7,9 +7,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_starter/bootstrap/application_config.dart';
+import 'package:preferences_storage/preferences_storage.dart';
+import 'package:flutter_starter/bootstrap/config/application_config.dart';
 import 'package:flutter_starter/bootstrap/dependency_container.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// A place where Application-Wide dependencies are initialized.
 ///
@@ -60,15 +60,27 @@ final class CompositionResult {
 }
 
 /// Creates the initialized [DependenciesContainer].
+///
+/// Initialization order matters: some services depend on others.
+/// Example order for a typical app:
+/// ```
+/// 1. PreferencesStorage  — no deps, needed by AppSettingsService
+/// 2. PackageInfo         — no deps, async platform call
+/// 3. AppSettingsService  — needs PreferencesStorage
+/// 4. ApiClient           — needs config (baseUrl, apiKey)
+/// 5. AuthRepository      — needs ApiClient + PreferencesStorage (token cache)
+/// 6. NotesRepository     — needs ApiClient + AuthRepository
+/// ```
+/// Add new dependencies here and expose them via [DependenciesContainer].
 Future<DependenciesContainer> createDependenciesContainer(
   ApplicationConfig config,
   Logger logger,
   ErrorReportingService errorReporter,
 ) async {
-  final sharedPreferences = SharedPreferencesAsync();
+  final preferencesStorage = PreferencesStorage();
   final packageInfo = await PackageInfo.fromPlatform();
-  final appSettingsContainer = await AppSettingsContainer.create(
-    sharedPreferences: sharedPreferences,
+  final appSettingsService = await AppSettingsService.create(
+    preferencesStorage,
   );
 
   return DependenciesContainer(
@@ -76,7 +88,7 @@ Future<DependenciesContainer> createDependenciesContainer(
     config: config,
     errorReporter: errorReporter,
     packageInfo: packageInfo,
-    appSettingsContainer: appSettingsContainer,
+    appSettingsService: appSettingsService,
   );
 }
 
@@ -95,7 +107,9 @@ Logger createAppLogger({List<LogObserver> observers = const []}) {
 ///
 /// Replace [NoopErrorReporter] with a real implementation (e.g. Crashlytics)
 /// from packages/monitoring when ready.
-Future<ErrorReportingService> createErrorReporter(ApplicationConfig config) async {
+Future<ErrorReportingService> createErrorReporter(
+  ApplicationConfig config,
+) async {
   const errorReporter = NoopErrorReporter();
 
   if (config.enableSentry) {

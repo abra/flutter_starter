@@ -1,65 +1,87 @@
 # flutter_starter
 
-A lightweight Flutter code template with clean architecture, BLoC, and modular feature packages.
+A lightweight Flutter project template with clean architecture, BLoC, and modular feature packages.
 Inspired by [sizzle_starter](https://github.com/hawkkiller/sizzle_starter) — a simplified version without the full monorepo setup, intended as a starting point for small to medium apps.
 
 ## What's included
 
 ```
 lib/
-  main.dart                     — delegates to starter()
+  main.dart                       — delegates to starter()
   bootstrap/
-    starter.dart                — runZonedGuarded, error handling, runApp
-    composition.dart            — composeDependencies() → CompositionResult
-    application_config.dart     — compile-time constants via --dart-define
-    environment.dart            — enum Environment (dev / staging / prod)
-    app_bloc_observer.dart      — global BLoC logging
-    bloc_transformer.dart       — SequentialBlocTransformer (asyncExpand)
-    dependency_container.dart   — DependenciesContainer + TestDependenciesContainer
+    starter.dart                  — runZonedGuarded, error handling, runApp
+    composition.dart              — composeDependencies() → CompositionResult
+    dependency_container.dart     — DependenciesContainer + TestDependenciesContainer
+    config/
+      application_config.dart     — compile-time constants via --dart-define
+      environment.dart            — enum Environment (dev / staging / prod)
+    bloc/
+      app_bloc_observer.dart      — global BLoC logging
+      bloc_transformer.dart       — SequentialBlocTransformer (asyncExpand)
   app/
-    root_context.dart           — DependenciesScope → MaterialContext
-    dependency_scope.dart       — InheritedWidget for DependenciesContainer + AppSettingsScope
-    material_context.dart       — MaterialApp wired to AppSettingsScope (theme, locale)
-    media_query.dart            — clamps text scale factor at root
-    initialization_failed.dart  — error screen with retry button
-    routing.dart                — route name constants
+    root_context.dart             — DependenciesScope → MaterialContext
+    dependency_scope.dart         — InheritedWidget for DependenciesContainer + AppSettingsScope
+    material_context.dart         — MaterialApp wired to AppTheme + AppSettingsScope
+    media_query.dart              — clamps text scale factor at root
+    router/
+      app_routes.dart             — route name constants
+    screens/
+      initialization_failed.dart  — error screen with retry button
   utils/
-    inherited_extension.dart    — inhOf / inhMaybeOf helpers
-    string_extension.dart       — String.limit(n) for log truncation
+    inherited_extension.dart      — inhOf / inhMaybeOf helpers
+    string_extension.dart         — String.limit(n) for log truncation
 packages/
-  features/
-    app_settings/                 — theme mode, seed color, locale (SharedPreferences)
-  component_library/            — shared UI: theme, design tokens, common widgets (create when needed)
-  monitoring/                   — Logger, ErrorReportingService, AnalyticsReporter
+  monitoring/                     — Logger, ErrorReportingService, AnalyticsReporter
+  preferences_storage/            — SharedPreferences wrapper
+  app_settings/                   — theme mode, seed color, locale (persisted)
+  component_library/              — AppTheme, AppThemeData, Spacing, FontSize, widgets
+  shared/                         — domain: interfaces, models, value objects
+  features/                       — your feature packages go here
 ```
 
-## packages/features/app_settings
+## packages/app_settings
 
 Manages user preferences: theme mode (light/dark/system), seed color, and locale.
 Persists to SharedPreferences automatically. Ready to use out of the box.
 
 ```dart
-// Rebuild on change:
-AppSettingsBuilder(
-  builder: (context, settings) {
-    return Text(settings.themeMode.name);
-  },
-)
+// Read settings (subscribes to changes):
+final settings = AppSettingsScope.of(context);
+Text(settings.themeMode.name);
 
 // Update (persists immediately):
-AppSettingsScope.of(context).settingsService.update(
+AppSettingsScope.update(
+  context,
   (s) => s.copyWith(themeMode: ThemeMode.dark),
 );
 ```
 
-`MaterialContext` wraps `MaterialApp` in `AppSettingsBuilder` — theme and locale switch automatically.
+`MaterialContext` wraps `MaterialApp` in `AppTheme` — theme and locale switch automatically.
 
-For adding translations, see [L10N.md](L10N.md).
+## packages/component_library
+
+Provides `AppTheme`, `AppThemeData`, `Spacing`, and `FontSize`.
+
+```dart
+// Custom theme colors:
+final theme = AppTheme.of(context);
+color: theme.cardBackgroundColor;
+
+// Design tokens:
+padding: const EdgeInsets.all(Spacing.mediumLarge);  // 16
+fontSize: FontSize.mediumLarge;                       // 18
+```
+
+See [.docs/THEMING.md](.docs/THEMING.md) for how to add custom colors.
 
 ## packages/monitoring
 
 `Logger` and `ErrorReportingService` are ready and wired in `starter.dart`.
-See [packages/monitoring/README.md](packages/monitoring/README.md) for full usage.
+
+```dart
+logger.info('User signed in');
+logger.error('Request failed', error: e, stackTrace: st);
+```
 
 ## Architecture overview
 
@@ -77,10 +99,26 @@ packages/features/*   →   lib/bootstrap/composition.dart   →   DependenciesC
 
 - Global dependencies are created once in `composition.dart` and stored in `DependenciesContainer`
 - `DependenciesScope` exposes the container to the widget tree without singletons or service locators
-- `AppSettingsScope` is a pure `InheritedWidget` holding `AppSettingsContainer` — never rebuilds on settings change
-- `AppSettingsBuilder` is the `StreamBuilder` — placed only where settings changes need to trigger a rebuild
-- Feature BLoCs access dependencies via `DependenciesScope.of(context)`
+- `DependenciesScope.of(context)` is called **only in `lib/app/router/`**
+- `AppSettingsScope.of(context)` can be used directly in feature widgets (exception — it's a package)
+- Feature BLoCs receive dependencies via constructor injection
+
+## Dependency rules
+
+```
+lib/                    → packages/*          ✅
+packages/*              → packages/*          ✅
+packages/features/*     → shared              ✅
+packages/features/*     → component_library   ✅
+packages/features/*     → lib/               ❌ never
+```
 
 ## How to use
 
 See [SETUP.md](SETUP.md).
+
+## Docs
+
+- [.docs/ARCHITECTURE.md](.docs/ARCHITECTURE.md) — package structure, dependency rules
+- [.docs/DEPENDENCIES.md](.docs/DEPENDENCIES.md) — how to add new data sources
+- [.docs/THEMING.md](.docs/THEMING.md) — custom colors, design tokens, multiple themes

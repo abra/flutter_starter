@@ -1,5 +1,5 @@
-name: app_settings
-description: "App settings (theme, color, locale) for flutter_starter."
+name: preferences_storage
+description: "SharedPreferences wrapper."
 publish_to: none
 version: 0.1.0
 

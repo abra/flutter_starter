@@ -7,6 +7,5 @@
 ///
 /// Used with [Navigator] or a router package (e.g. go_router).
 abstract final class AppRoutes {
-  static const notes = '/';
-  static const settings = '/settings';
+  static const home = '/';
 }
