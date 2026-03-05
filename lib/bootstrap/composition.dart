@@ -7,7 +7,6 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:preferences_storage/preferences_storage.dart';
 import 'package:flutter_starter/bootstrap/config/application_config.dart';
 import 'package:flutter_starter/bootstrap/dependency_container.dart';
 
@@ -64,12 +63,11 @@ final class CompositionResult {
 /// Initialization order matters: some services depend on others.
 /// Example order for a typical app:
 /// ```
-/// 1. PreferencesStorage  — no deps, needed by AppSettingsService
-/// 2. PackageInfo         — no deps, async platform call
-/// 3. AppSettingsService  — needs PreferencesStorage
-/// 4. ApiClient           — needs config (baseUrl, apiKey)
-/// 5. AuthRepository      — needs ApiClient + PreferencesStorage (token cache)
-/// 6. NotesRepository     — needs ApiClient + AuthRepository
+/// 1. PackageInfo         — no deps, async platform call
+/// 2. AppSettingsService  — no deps, creates PreferencesStorage internally
+/// 3. ApiClient           — needs config (baseUrl, apiKey)
+/// 4. AuthRepository      — needs ApiClient
+/// 5. NotesRepository     — needs ApiClient + AuthRepository
 /// ```
 /// Add new dependencies here and expose them via [DependenciesContainer].
 Future<DependenciesContainer> createDependenciesContainer(
@@ -77,11 +75,8 @@ Future<DependenciesContainer> createDependenciesContainer(
   Logger logger,
   ErrorReportingService errorReporter,
 ) async {
-  final preferencesStorage = PreferencesStorage();
   final packageInfo = await PackageInfo.fromPlatform();
-  final appSettingsService = await AppSettingsService.create(
-    preferencesStorage,
-  );
+  final appSettingsService = await AppSettingsService.create();
 
   return DependenciesContainer(
     logger: logger,
