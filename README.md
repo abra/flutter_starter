@@ -72,8 +72,6 @@ padding: const EdgeInsets.all(Spacing.mediumLarge);  // 16
 fontSize: FontSize.mediumLarge;                       // 18
 ```
 
-See [.docs/THEMING.md](.docs/THEMING.md) for how to add custom colors.
-
 ## packages/monitoring
 
 `Logger` and `ErrorReportingService` are ready and wired in `starter.dart`.
