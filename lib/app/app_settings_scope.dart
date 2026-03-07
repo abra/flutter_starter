@@ -1,9 +1,7 @@
-import 'package:app_settings/src/app_settings.dart';
-import 'package:app_settings/src/app_settings_service.dart';
+import 'package:app_settings_repository/app_settings_repository.dart';
 import 'package:flutter/widgets.dart';
 
-/// Provides [AppSettings] to the widget subtree and rebuilds
-/// dependants whenever settings change.
+/// Listens to [AppSettingsService] and provides [AppSettings] to the subtree.
 class AppSettingsScope extends StatelessWidget {
   const AppSettingsScope({
     required this.service,
@@ -16,16 +14,14 @@ class AppSettingsScope extends StatelessWidget {
 
   /// Returns current [AppSettings] and subscribes to changes.
   static AppSettings of(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<_AppSettingsInherited>()!
-          .settings;
+      context.dependOnInheritedWidgetOfExactType<_SettingsInherited>()!.settings;
 
   /// Updates settings without subscribing to changes.
   static Future<void> update(
     BuildContext context,
     AppSettings Function(AppSettings) transform,
   ) => context
-      .getInheritedWidgetOfExactType<_AppSettingsInherited>()!
+      .getInheritedWidgetOfExactType<_SettingsInherited>()!
       .service
       .update(transform);
 
@@ -35,7 +31,7 @@ class AppSettingsScope extends StatelessWidget {
       stream: service.stream,
       initialData: service.current,
       builder: (context, snapshot) {
-        return _AppSettingsInherited(
+        return _SettingsInherited(
           settings: snapshot.data!,
           service: service,
           child: child,
@@ -45,8 +41,8 @@ class AppSettingsScope extends StatelessWidget {
   }
 }
 
-class _AppSettingsInherited extends InheritedWidget {
-  const _AppSettingsInherited({
+class _SettingsInherited extends InheritedWidget {
+  const _SettingsInherited({
     required super.child,
     required this.settings,
     required this.service,
@@ -56,6 +52,5 @@ class _AppSettingsInherited extends InheritedWidget {
   final AppSettingsService service;
 
   @override
-  bool updateShouldNotify(_AppSettingsInherited old) =>
-      settings != old.settings;
+  bool updateShouldNotify(_SettingsInherited old) => settings != old.settings;
 }

@@ -26,9 +26,9 @@ flutter run
 ## After setup — checklist
 
 - [ ] `lib/app/router/app_routes.dart` — add your route constants
-- [ ] `lib/app/material_context.dart` — replace `home: const Placeholder()` with your home screen
-- [ ] `lib/bootstrap/dependency_container.dart` — add your feature dependencies
-- [ ] `lib/bootstrap/composition.dart` — wire dependencies in `createDependenciesContainer()`
+- [ ] `lib/app/router/app_router.dart` — replace `Placeholder()` with your home screen
+- [ ] `lib/app/dependency_container.dart` — add your feature dependencies
+- [ ] `lib/app/composition.dart` — wire dependencies in `createDependenciesContainer()`
 - [ ] `android/app/build.gradle.kts` — verify `namespace` / `applicationId` are not duplicated
 - [ ] `packages/features/` — add your feature packages here
 - [ ] `packages/shared/` — add domain models and repository interfaces
@@ -66,15 +66,14 @@ dependencies:
     path: packages/monitoring
   component_library:
     path: packages/component_library
-  app_settings:
-    path: packages/app_settings
-  preferences_storage:
-    path: packages/preferences_storage
+  app_settings_repository:
+    path: packages/app_settings_repository
   shared:
     path: packages/shared
 
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.1.1
+  go_router: ^17.1.0
   package_info_plus: ^9.0.0
 
 dev_dependencies:

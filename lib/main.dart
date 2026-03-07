@@ -2,6 +2,6 @@
 // Delegates immediately to starter() to keep main() free of any logic —
 // this makes it easy to swap the entry point in tests or flavors.
 
-import 'package:flutter_starter/bootstrap/starter.dart';
+import 'package:flutter_starter/app/starter.dart';
 
 void main() => starter();

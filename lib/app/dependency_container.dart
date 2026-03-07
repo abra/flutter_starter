@@ -4,10 +4,10 @@
 // singletons or a service locator. This keeps dependencies explicit and makes
 // them easy to substitute in tests via TestDependenciesContainer.
 
-import 'package:app_settings/app_settings.dart';
+import 'package:app_settings_repository/app_settings_repository.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_starter/bootstrap/config/application_config.dart';
+import 'package:flutter_starter/app/config/application_config.dart';
 
 /// Container for global dependencies.
 class DependenciesContainer {

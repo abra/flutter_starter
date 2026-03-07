@@ -1,33 +1,55 @@
-// MaterialApp entry point: wires theme, locale and navigator.
+// MaterialApp entry point: wires theme, locale and router.
 //
-// Reads AppSettings from AppSettingsScope and builds AppThemeData instances
-// from component_library. Wraps MaterialApp in AppTheme so that all widgets
-// in the tree can access custom theme colors via AppTheme.of(context).
+// StatefulWidget so that GoRouter is created once in initState and disposed
+// properly, avoiding recreation on every settings change (theme/locale).
 
-import 'package:app_settings/app_settings.dart';
 import 'package:component_library/component_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_starter/app/media_query.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_starter/app/app_settings_scope.dart';
+import 'package:flutter_starter/app/dependency_scope.dart';
+import 'package:flutter_starter/app/router/app_router.dart';
 
-/// Entry point for the application that creates [MaterialApp].
-class MaterialContext extends StatelessWidget {
+/// Entry point for the application that creates [MaterialApp.router].
+class MaterialContext extends StatefulWidget {
   const MaterialContext({super.key});
 
-  /// Global key required for correct Widgets Inspector behavior.
+  @override
+  State<MaterialContext> createState() => _MaterialContextState();
+}
+
+class _MaterialContextState extends State<MaterialContext> {
   static final _globalKey = GlobalKey(debugLabel: 'MaterialContext');
+
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = buildRouter(
+      dependencies: DependenciesScope.of(context),
+    );
+  }
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final settings = AppSettingsScope.of(context);
 
-    final lightTheme = LightAppThemeData(seedColor: settings.seedColor);
-    final darkTheme = DarkAppThemeData(seedColor: settings.seedColor);
+    const lightTheme = LightAppThemeData();
+    const darkTheme = DarkAppThemeData();
 
     return AppTheme(
       lightTheme: lightTheme,
       darkTheme: darkTheme,
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: _router,
         themeMode: settings.themeMode,
         theme: lightTheme.materialThemeData,
         darkTheme: darkTheme.materialThemeData,
@@ -38,17 +60,24 @@ class MaterialContext extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: const Placeholder(), // TODO: Replace with your home screen
         builder: (context, child) {
-          // KeyedSubtree with a stable GlobalKey prevents Flutter from
-          // destroying and recreating the subtree when MaterialApp rebuilds,
-          // which is required for correct Flutter Inspector behavior.
           return KeyedSubtree(
             key: _globalKey,
-            child: MediaQueryRootOverride(child: child!),
+            child: _MediaQueryRootOverride(child: child!),
           );
         },
       ),
     );
   }
+}
+
+// Clamps system text scale so large accessibility font sizes don't break layouts.
+class _MediaQueryRootOverride extends StatelessWidget {
+  const _MediaQueryRootOverride({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      MediaQuery.withClampedTextScaling(maxScaleFactor: 2, child: child);
 }

@@ -1,5 +1,5 @@
-name: app_settings
-description: "App settings (theme, color, locale)."
+name: app_settings_repository
+description: "App settings (theme mode, locale). Persists to SharedPreferences and streams changes."
 publish_to: none
 version: 0.1.0
 

@@ -13,10 +13,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:flutter_starter/app/root_context.dart';
 import 'package:flutter_starter/app/screens/initialization_failed.dart';
-import 'package:flutter_starter/bootstrap/bloc/app_bloc_observer.dart';
-import 'package:flutter_starter/bootstrap/bloc/bloc_transformer.dart';
-import 'package:flutter_starter/bootstrap/composition.dart';
-import 'package:flutter_starter/bootstrap/config/application_config.dart';
+import 'package:flutter_starter/app/bloc/app_bloc_observer.dart';
+import 'package:flutter_starter/app/bloc/bloc_transformer.dart';
+import 'package:flutter_starter/app/composition.dart';
+import 'package:flutter_starter/app/config/application_config.dart';
 
 /// Initializes dependencies and runs app.
 Future<void> starter() async {
