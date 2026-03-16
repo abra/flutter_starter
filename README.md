@@ -4,6 +4,8 @@ Production-ready Flutter monorepo template. Clean architecture, BLoC, GoRouter,
 modular feature packages, theming, settings, logging, and toast notifications —
 wired up and ready to go.
 
+Based on [sizzle_starter](https://github.com/hawkkiller/sizzle_starter) by [@hawkkiller](https://github.com/hawkkiller).
+
 ## What's included
 
 | Package | Description |
