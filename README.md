@@ -103,9 +103,6 @@ showNotification(context, type: NotificationType.success, message: 'Saved');
 | File | Content |
 |---|---|
 | `CLAUDE.md` | Full architecture reference, patterns, where to add new code |
-| `.docs/ARCHITECTURE.md` | Package dependency rules, DI, navigation, BLoC setup |
-| `.docs/THEMING.md` | Theme system, adding custom colors, design tokens |
-| `.docs/L10N.md` | Localization guide, per-feature ARB files |
 | `packages/monitoring/README.md` | Logger, error reporter, analytics setup |
 | `packages/toast_service/README.md` | Toast notifications, swapping the library |
 | `SETUP.md` | Bootstrap a new project from this template |
