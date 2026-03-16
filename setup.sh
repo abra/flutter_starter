@@ -40,14 +40,18 @@ insert = """
     path: packages/monitoring
   component_library:
     path: packages/component_library
-  app_settings_repository:
-    path: packages/app_settings_repository
+  preferences_service:
+    path: packages/preferences_service
+  toast_service:
+    path: packages/toast_service
   shared:
     path: packages/shared
 
   flutter_bloc: ^9.1.1
   go_router: ^17.1.0
   package_info_plus: ^9.0.0
+  bloc_concurrency: ^0.3.0
+  equatable: ^2.0.5
 """
 
 # Insert flutter_localizations after 'sdk: flutter' (first occurrence, under dependencies)
@@ -72,7 +76,7 @@ echo "→ Running flutter pub get in root..."
 flutter pub get
 
 echo "→ Running flutter pub get in packages..."
-for pkg in monitoring app_settings_repository component_library; do
+for pkg in monitoring preferences_service component_library toast_service shared; do
   echo "  packages/$pkg..."
   (cd "packages/$pkg" && flutter pub get)
 done

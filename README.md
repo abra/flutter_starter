@@ -1,117 +1,111 @@
 # flutter_starter
 
-A lightweight Flutter project template with clean architecture, BLoC, and modular feature packages.
-Inspired by [sizzle_starter](https://github.com/hawkkiller/sizzle_starter) — a simplified version without the full monorepo setup, intended as a starting point for small to medium apps.
+Production-ready Flutter monorepo template. Clean architecture, BLoC, GoRouter,
+modular feature packages, theming, settings, logging, and toast notifications —
+wired up and ready to go.
 
 ## What's included
 
+| Package | Description |
+|---|---|
+| `monitoring` | Structured logger, error reporter (Sentry-ready), analytics reporter |
+| `preferences_service` | User settings (theme, locale) with persistence and streaming |
+| `component_library` | Theme system, design tokens (Spacing, FontSize, IconSize, AppRadius), reusable widgets |
+| `toast_service` | In-app toast notifications (wraps toastification, swappable) |
+| `shared` | Domain models, interfaces, value objects — no Flutter deps |
+| `features/example_feature` | Example BLoC feature — shows the full pattern, delete when done |
+
+## Architecture
+
 ```
-lib/
-  main.dart                       — delegates to starter()
-  bootstrap/
-    starter.dart                  — runZonedGuarded, error handling, runApp
-    composition.dart              — composeDependencies() → CompositionResult
-    dependency_container.dart     — DependenciesContainer + TestDependenciesContainer
-    config/
-      application_config.dart     — compile-time constants via --dart-define
-      environment.dart            — enum Environment (dev / staging / prod)
-    bloc/
-      app_bloc_observer.dart      — global BLoC logging
-      bloc_transformer.dart       — SequentialBlocTransformer (asyncExpand)
-  app/
-    root_context.dart             — DependenciesScope → MaterialContext
-    dependency_scope.dart         — InheritedWidget for DependenciesContainer + AppSettingsScope
-    material_context.dart         — MaterialApp wired to AppTheme + AppSettingsScope
-    media_query.dart              — clamps text scale factor at root
-    router/
-      app_routes.dart             — route name constants
-    screens/
-      initialization_failed.dart  — error screen with retry button
-  utils/
-    inherited_extension.dart      — inhOf / inhMaybeOf helpers
-    string_extension.dart         — String.limit(n) for log truncation
+lib/                      ← app shell (router, DI, bootstrap)
 packages/
-  monitoring/                     — Logger, ErrorReportingService, AnalyticsReporter
-  preferences_storage/            — SharedPreferences wrapper
-  app_settings/                   — theme mode, seed color, locale (persisted)
-  component_library/              — AppTheme, AppThemeData, Spacing, FontSize, widgets
-  shared/                         — domain: interfaces, models, value objects
-  features/                       — your feature packages go here
+  shared/                 ← domain layer (no Flutter)
+  monitoring/             ← logging + error reporting
+  preferences_service/← user preferences
+  component_library/      ← design system
+  toast_service/          ← notifications
+  features/
+    example_feature/      ← example — delete and replace with your own
 ```
 
-## packages/app_settings
+**Dependency rules:** features depend on shared, component_library, monitoring.
+Features never import each other. `lib/` is the only place that knows everything.
 
-Manages user preferences: theme mode (light/dark/system), seed color, and locale.
-Persists to SharedPreferences automatically. Ready to use out of the box.
+## Quick start
 
+```bash
+# 1. Clone or copy the template
+git clone <this-repo> my_app
+cd my_app
+
+# 2. Run the setup script (renames flutter_starter → your app name)
+bash setup.sh my_app
+
+# 3. Install dependencies
+make get
+
+# 4. Run
+make run
+```
+
+See [SETUP.md](SETUP.md) for full setup instructions.
+
+## Commands
+
+```bash
+make get       # pub get for root + all packages
+make format    # dart format ./
+make analyze   # flutter analyze
+make test      # run all package tests
+make run       # flutter run
+make build     # flutter build apk --release
+```
+
+## Key patterns
+
+### BLoC + sequential events
 ```dart
-// Read settings (subscribes to changes):
-final settings = AppSettingsScope.of(context);
-Text(settings.themeMode.name);
+// All BLoCs process events sequentially by default (no races).
+Bloc.transformer = SequentialBlocTransformer<Object?>().transform;
+
+// Override per-event with restartable() for search/load:
+on<SearchQueryChanged>(_onSearch, transformer: restartable());
+```
+
+### Settings
+```dart
+// Read (subscribes to changes):
+final settings = PreferencesScope.of(context);
 
 // Update (persists immediately):
-AppSettingsScope.update(
-  context,
-  (s) => s.copyWith(themeMode: ThemeMode.dark),
-);
+PreferencesScope.update(context, (s) => s.copyWith(themeMode: ThemeMode.dark));
 ```
 
-`MaterialContext` wraps `MaterialApp` in `AppTheme` — theme and locale switch automatically.
-
-## packages/component_library
-
-Provides `AppTheme`, `AppThemeData`, `Spacing`, and `FontSize`.
-
+### Theme
 ```dart
-// Custom theme colors:
-final theme = AppTheme.of(context);
+final theme = AppTheme.of(context); // auto light/dark
 color: theme.cardBackgroundColor;
-
-// Design tokens:
-padding: const EdgeInsets.all(Spacing.mediumLarge);  // 16
-fontSize: FontSize.mediumLarge;                       // 18
+padding: const EdgeInsets.all(Spacing.mediumLarge); // 16
 ```
 
-## packages/monitoring
-
-`Logger` and `ErrorReportingService` are ready and wired in `starter.dart`.
-
+### Toast
 ```dart
-logger.info('User signed in');
-logger.error('Request failed', error: e, stackTrace: st);
+// Wrap MaterialApp once:
+ToastWrapper(child: MaterialApp.router(...))
+
+// Show anywhere:
+showNotification(context, type: NotificationType.success, message: 'Saved');
 ```
 
-## Architecture overview
+## Documentation
 
-Dependencies flow in one direction:
-
-```
-packages/features/*   →   lib/bootstrap/composition.dart   →   DependenciesContainer
-                                                                       ↓
-                                                           DependenciesScope (InheritedWidget)
-                                                                       ↓
-                                                           AppSettingsScope → MaterialContext
-                                                                       ↓
-                                                                 feature screens
-```
-
-- Global dependencies are created once in `composition.dart` and stored in `DependenciesContainer`
-- `DependenciesScope` exposes the container to the widget tree without singletons or service locators
-- `DependenciesScope.of(context)` is called **only in `lib/app/router/`**
-- `AppSettingsScope.of(context)` can be used directly in feature widgets (exception — it's a package)
-- Feature BLoCs receive dependencies via constructor injection
-
-## Dependency rules
-
-```
-lib/                    → packages/*          ✅
-packages/*              → packages/*          ✅
-packages/features/*     → shared              ✅
-packages/features/*     → component_library   ✅
-packages/features/*     → lib/               ❌ never
-```
-
-## How to use
-
-See [SETUP.md](SETUP.md).
-
+| File | Content |
+|---|---|
+| `CLAUDE.md` | Full architecture reference, patterns, where to add new code |
+| `.docs/ARCHITECTURE.md` | Package dependency rules, DI, navigation, BLoC setup |
+| `.docs/THEMING.md` | Theme system, adding custom colors, design tokens |
+| `.docs/L10N.md` | Localization guide, per-feature ARB files |
+| `packages/monitoring/README.md` | Logger, error reporter, analytics setup |
+| `packages/toast_service/README.md` | Toast notifications, swapping the library |
+| `SETUP.md` | Bootstrap a new project from this template |

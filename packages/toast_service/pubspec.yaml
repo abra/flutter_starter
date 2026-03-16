@@ -1,0 +1,16 @@
+name: toast_service
+description: "Thin wrapper for in-app toast notifications."
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  toastification: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

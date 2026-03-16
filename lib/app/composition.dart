@@ -4,7 +4,7 @@
 // composeDependencies() can be called independently in tests
 // with substituted implementations.
 
-import 'package:app_settings_repository/app_settings_repository.dart';
+import 'package:preferences_service/preferences_service.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_starter/app/config/application_config.dart';
@@ -64,7 +64,7 @@ final class CompositionResult {
 /// Example order for a typical app:
 /// ```
 /// 1. PackageInfo         — no deps, async platform call
-/// 2. AppSettingsService  — no deps, creates PreferencesStorage internally
+/// 2. PreferencesService  — no deps, creates PreferencesStorage internally
 /// 3. ApiClient           — needs config (baseUrl, apiKey)
 /// 4. AuthRepository      — needs ApiClient
 /// 5. NotesRepository     — needs ApiClient + AuthRepository
@@ -76,14 +76,14 @@ Future<DependenciesContainer> createDependenciesContainer(
   ErrorReportingService errorReporter,
 ) async {
   final packageInfo = await PackageInfo.fromPlatform();
-  final appSettingsService = await AppSettingsService.create();
+  final preferencesService = await PreferencesService.create();
 
   return DependenciesContainer(
     logger: logger,
     config: config,
     errorReporter: errorReporter,
     packageInfo: packageInfo,
-    appSettingsService: appSettingsService,
+    preferencesService: preferencesService,
   );
 }
 

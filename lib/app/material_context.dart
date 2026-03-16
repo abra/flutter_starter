@@ -7,7 +7,7 @@ import 'package:component_library/component_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_starter/app/app_settings_scope.dart';
+import 'package:flutter_starter/app/preferences_scope.dart';
 import 'package:flutter_starter/app/dependency_scope.dart';
 import 'package:flutter_starter/app/router/app_router.dart';
 
@@ -40,7 +40,7 @@ class _MaterialContextState extends State<MaterialContext> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = AppSettingsScope.of(context);
+    final settings = PreferencesScope.of(context);
 
     const lightTheme = LightAppThemeData();
     const darkTheme = DarkAppThemeData();

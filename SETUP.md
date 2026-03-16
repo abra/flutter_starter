@@ -66,8 +66,8 @@ dependencies:
     path: packages/monitoring
   component_library:
     path: packages/component_library
-  app_settings_repository:
-    path: packages/app_settings_repository
+  preferences_service:
+    path: packages/preferences_service
   shared:
     path: packages/shared
 

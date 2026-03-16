@@ -1,25 +1,25 @@
-import 'package:app_settings_repository/app_settings_repository.dart';
+import 'package:preferences_service/preferences_service.dart';
 import 'package:flutter/widgets.dart';
 
-/// Listens to [AppSettingsService] and provides [AppSettings] to the subtree.
-class AppSettingsScope extends StatelessWidget {
-  const AppSettingsScope({
+/// Listens to [PreferencesService] and provides [Preferences] to the subtree.
+class PreferencesScope extends StatelessWidget {
+  const PreferencesScope({
     required this.service,
     required this.child,
     super.key,
   });
 
-  final AppSettingsService service;
+  final PreferencesService service;
   final Widget child;
 
-  /// Returns current [AppSettings] and subscribes to changes.
-  static AppSettings of(BuildContext context) =>
+  /// Returns current [Preferences] and subscribes to changes.
+  static Preferences of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_SettingsInherited>()!.settings;
 
-  /// Updates settings without subscribing to changes.
+  /// Updates preferences without subscribing to changes.
   static Future<void> update(
     BuildContext context,
-    AppSettings Function(AppSettings) transform,
+    Preferences Function(Preferences) transform,
   ) => context
       .getInheritedWidgetOfExactType<_SettingsInherited>()!
       .service
@@ -27,7 +27,7 @@ class AppSettingsScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppSettings>(
+    return StreamBuilder<Preferences>(
       stream: service.stream,
       initialData: service.current,
       builder: (context, snapshot) {
@@ -48,8 +48,8 @@ class _SettingsInherited extends InheritedWidget {
     required this.service,
   });
 
-  final AppSettings settings;
-  final AppSettingsService service;
+  final Preferences settings;
+  final PreferencesService service;
 
   @override
   bool updateShouldNotify(_SettingsInherited old) => settings != old.settings;
