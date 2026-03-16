@@ -5,7 +5,7 @@
 // initialization logic.
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_starter/app/preferences_scope.dart';
+import 'package:preferences_service/preferences_service.dart';
 import 'package:flutter_starter/app/composition.dart';
 import 'package:flutter_starter/app/dependency_scope.dart';
 import 'package:flutter_starter/app/material_context.dart';

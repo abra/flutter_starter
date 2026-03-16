@@ -7,7 +7,7 @@ import 'package:component_library/component_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_starter/app/preferences_scope.dart';
+import 'package:preferences_service/preferences_service.dart';
 import 'package:flutter_starter/app/dependency_scope.dart';
 import 'package:flutter_starter/app/router/app_router.dart';
 

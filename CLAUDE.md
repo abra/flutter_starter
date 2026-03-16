@@ -212,6 +212,12 @@ try {
 emit(state.copyWith(items: updated));
 ```
 
+### Preferences resilience
+`PreferencesService.update()` applies the change in-memory and emits to the stream
+regardless of whether persistence succeeds. Save failures are silently swallowed
+in `PreferencesService`. The UI stays consistent for the session; on next launch
+the old value is restored from disk.
+
 ### Toast notifications
 ```dart
 // In MaterialContext — wrap MaterialApp:
