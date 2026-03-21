@@ -25,10 +25,7 @@ class BottomSheetHeader extends StatelessWidget {
         Expanded(
           child: Text(title, style: Theme.of(context).textTheme.titleMedium),
         ),
-        IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: onClose,
-        ),
+        IconButton(icon: const Icon(Icons.close), onPressed: onClose),
       ],
     );
   }

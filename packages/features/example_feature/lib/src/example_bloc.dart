@@ -51,7 +51,9 @@ class ExampleBloc extends Bloc<ExampleEvent, ExampleState> {
     try {
       await _repository.deleteItem(event.id);
       emit(
-        state.copyWith(items: state.items.where((id) => id != event.id).toList()),
+        state.copyWith(
+          items: state.items.where((id) => id != event.id).toList(),
+        ),
       );
     } catch (e, st) {
       addError(e, st);

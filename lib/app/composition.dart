@@ -76,7 +76,9 @@ Future<DependenciesContainer> createDependenciesContainer(
   ErrorReportingService errorReporter,
 ) async {
   final packageInfo = await PackageInfo.fromPlatform();
-  final preferencesService = await PreferencesService.create();
+  final preferencesService = await PreferencesService.create(
+    supportedCodes: const ['en'],
+  );
 
   return DependenciesContainer(
     logger: logger,

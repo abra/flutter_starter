@@ -16,7 +16,7 @@ touching any feature code.
 ToastWrapper(child: child)
 
 // Show a toast
-showNotification(
+showToast(
   context,
   type: NotificationType.success,
   message: 'Saved',

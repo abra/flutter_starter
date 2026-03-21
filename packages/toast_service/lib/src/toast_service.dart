@@ -8,13 +8,13 @@ enum NotificationType { success, error }
 /// Call from anywhere that has a [BuildContext].
 ///
 /// ```dart
-/// showNotification(
+/// showToast(
 ///   context,
 ///   type: NotificationType.success,
 ///   message: 'Saved',
 /// );
 /// ```
-void showNotification(
+void showToast(
   BuildContext context, {
   required NotificationType type,
   required String message,

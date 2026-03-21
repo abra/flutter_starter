@@ -97,7 +97,7 @@ padding: const EdgeInsets.all(Spacing.mediumLarge); // 16
 ToastWrapper(child: MaterialApp.router(...))
 
 // Show anywhere:
-showNotification(context, type: NotificationType.success, message: 'Saved');
+showToast(context, type: NotificationType.success, message: 'Saved');
 ```
 
 ## Documentation

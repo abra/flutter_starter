@@ -1,28 +1,26 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:ui' show Locale;
+import 'dart:async' show StreamController;
 
-import 'package:preferences_service/src/preferences.dart';
-import 'package:preferences_service/src/preferences_storage.dart';
-import 'package:flutter/material.dart' show ThemeMode;
+import 'preferences.dart';
+import 'preferences_repository.dart';
+import 'preferences_storage.dart';
 
 /// Loads, persists and streams [Preferences].
 ///
 /// Update resilience: if [save] fails the change is still applied in-memory
 /// and emitted to the stream so the UI stays consistent for the session.
 class PreferencesService {
-  PreferencesService._(this._prefs, this._current);
+  PreferencesService._(this._repository, this._current);
 
-  static const _key = 'app_settings';
-
-  final PreferencesStorage _prefs;
+  final PreferencesRepository _repository;
   final _controller = StreamController<Preferences>.broadcast();
   Preferences _current;
 
-  static Future<PreferencesService> create() async {
-    final prefs = PreferencesStorage();
-    final settings = await _load(prefs);
-    return PreferencesService._(prefs, settings);
+  static Future<PreferencesService> create({
+    required List<String> supportedCodes,
+  }) async {
+    final repository = PreferencesRepository(PreferencesStorage());
+    final current = await repository.load(supportedCodes);
+    return PreferencesService._(repository, current);
   }
 
   Stream<Preferences> get stream => _controller.stream;
@@ -32,36 +30,11 @@ class PreferencesService {
   Future<void> update(Preferences Function(Preferences) transform) async {
     _current = transform(_current);
     try {
-      await _save(_prefs, _current);
+      await _repository.save(_current);
     } catch (_) {
       // Save failure is non-fatal: in-memory state is updated and emitted
-      // so the UI stays consistent for this session. On next launch the
-      // old value is restored from disk.
+      // so the UI stays consistent for this session.
     }
     _controller.add(_current);
-  }
-
-  static Future<Preferences> _load(PreferencesStorage prefs) async {
-    final json = await prefs.getString(_key);
-    if (json == null) return const Preferences();
-    try {
-      final map = jsonDecode(json) as Map<String, Object?>;
-      return Preferences(
-        themeMode: ThemeMode.values.byName(
-          map['themeMode'] as String? ?? 'system',
-        ),
-        locale: Locale(map['locale'] as String? ?? 'en'),
-      );
-    } catch (_) {
-      return const Preferences();
-    }
-  }
-
-  static Future<void> _save(PreferencesStorage prefs, Preferences s) async {
-    final map = <String, Object?>{
-      'themeMode': s.themeMode.name,
-      'locale': s.locale.languageCode,
-    };
-    await prefs.setString(_key, jsonEncode(map));
   }
 }

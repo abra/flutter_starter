@@ -224,7 +224,7 @@ the old value is restored from disk.
 ToastWrapper(child: MaterialApp.router(...))
 
 // In feature widgets:
-showNotification(context, type: NotificationType.success, message: 'Done');
+showToast(context, type: NotificationType.success, message: 'Done');
 ```
 
 ---

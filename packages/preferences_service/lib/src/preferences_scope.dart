@@ -15,9 +15,10 @@ class PreferencesScope extends StatelessWidget {
   final Widget child;
 
   /// Returns current [Preferences] and subscribes to changes.
-  static Preferences of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_PreferencesInherited>()!
-      .preferences;
+  static Preferences of(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<_PreferencesInherited>()!
+          .preferences;
 
   @override
   Widget build(BuildContext context) {
