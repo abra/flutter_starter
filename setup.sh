@@ -83,8 +83,7 @@ done
 
 echo ""
 echo "✓ Done! Next steps:"
-echo "  - lib/app/router/app_routes.dart → add your route constants"
-echo "  - lib/app/router/app_router.dart → replace Placeholder() with your home screen"
+echo "  - lib/app/routing.dart → add your route constants and replace Placeholder() with your home screen"
 echo "  - lib/app/dependency_container.dart → add your feature dependencies"
 echo "  - lib/app/composition.dart → wire dependencies in createDependenciesContainer()"
 echo "  - flutter run"

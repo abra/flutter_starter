@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:monitoring/monitoring.dart';
 import 'package:flutter_starter/app/root_context.dart';
-import 'package:flutter_starter/app/screens/initialization_failed.dart';
+import 'package:flutter_starter/app/initialization_failed_screen.dart';
 import 'package:flutter_starter/app/bloc/app_bloc_observer.dart';
 import 'package:flutter_starter/app/bloc/bloc_transformer.dart';
 import 'package:flutter_starter/app/composition.dart';
@@ -61,7 +61,7 @@ Future<void> starter() async {
         // ensuring no failure silently escapes during initialization.
         logger.error('Initialization failed', error: e, stackTrace: stackTrace);
         runApp(
-          InitializationFailedApp(
+          InitializationFailedScreen(
             error: e,
             stackTrace: stackTrace,
             onRetryInitialization: composeAndRun,
